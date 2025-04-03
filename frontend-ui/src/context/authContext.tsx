@@ -48,10 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (name: string, username: string, password: string) => {
+  const register = async (username: string, password: string, name: string) => {
     setLoading(true);
     try {
-      await apiRegister(name, username, password);
+      await apiRegister(username, password, name);
       // After registration, login automatically
       await login(username, password);
     } finally {

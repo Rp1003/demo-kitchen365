@@ -93,6 +93,11 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
             step={0.01}
             placeholder="Enter price"
             prefix="$"
+            onKeyDown={(e) => {
+              if (!/[0-9.]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}            
           />
         </Form.Item>
 
@@ -105,27 +110,6 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
           }
         >
           <Input.TextArea rows={3} />
-        </Form.Item>
-
-        <Form.Item
-          name="category"
-          label={
-            <span className="text-[15px] font-medium flex items-center gap-2">
-              Category
-            </span>
-          }
-        >
-          <Select
-            className="!w-full !text-[15px]"
-            placeholder="Select a category"
-            options={[
-              { value: 'electronics', label: 'Electronics' },
-              { value: 'clothing', label: 'Clothing' },
-              { value: 'food', label: 'Food' },
-              { value: 'books', label: 'Books' },
-              { value: 'toys', label: 'Toys' },
-            ]}
-          />
         </Form.Item>
 
         <Form.Item>

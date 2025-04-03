@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Delete, Body, Param, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, HttpCode, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entity/product.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { SearchProductDto } from './dto/search-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -11,6 +12,11 @@ export class ProductsController {
   @Get()
   findAll(): Promise<Product[]> {
     return this.productsService.findAll();
+  }
+
+  @Get('search')
+  search(@Query() searchProductDto: SearchProductDto): Promise<Product[]> {
+    return this.productsService.search(searchProductDto);
   }
 
   // @UseGuards(JwtAuthGuard)

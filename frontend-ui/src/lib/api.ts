@@ -94,10 +94,10 @@ export async function login(
   return data;
 }
 
-export async function register(
-  name: string,
+export async function register(  
   username: string,
-  password: string
+  password: string,
+  name: string,
 ): Promise<any> {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
@@ -124,5 +124,25 @@ export async function getProfile(): Promise<any> {
     throw new Error("Failed to get profile");
   }
 
+  return response.json();
+}
+
+export interface SearchProductDto {
+  name?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+export async function searchProducts(params: SearchProductDto): Promise<Product[]> {
+  const queryParams = new URLSearchParams();
+  
+  if (params.name) queryParams.append('name', params.name);
+  if (params.minPrice !== undefined) queryParams.append('minPrice', params.minPrice.toString());
+  if (params.maxPrice !== undefined) queryParams.append('maxPrice', params.maxPrice.toString());
+
+  const response = await fetch(`${API_URL}/products/search?${queryParams.toString()}`);
+  if (!response.ok) {
+    throw new Error("Failed to search products");
+  }
   return response.json();
 }

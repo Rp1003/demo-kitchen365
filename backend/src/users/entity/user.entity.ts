@@ -7,10 +7,10 @@ export class User {
 
   @Column({ unique: true })
   username: string;
+  
+  @Column()
+  password: string; // This will store hashed passwords
 
   @Column()
   name: string;
-
-  @Column()
-  password: string; // This will store hashed passwords
 }

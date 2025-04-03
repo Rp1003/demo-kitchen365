@@ -21,7 +21,7 @@ export default function LoginForm() {
       if (isLogin) {
         await login(username, password);
       } else {
-        await register(name, username, password);
+        await register(username, password, name);
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed');
