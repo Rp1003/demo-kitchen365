@@ -10,7 +10,7 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<Product[]> {
     return this.productsRepository.find();
@@ -35,7 +35,14 @@ export class ProductsService {
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
+    const productExist = await this.productsRepository.findOne({ where: { name: createProductDto.name } });
+console.log(productExist)
+    if(productExist){
+      throw new NotFoundException(`Product already exist in database`);
+    }
+
     const product = this.productsRepository.create(createProductDto);
+    
     return this.productsRepository.save(product);
   }
 

@@ -16,6 +16,7 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { token } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (values: CreateProductDto) => {
@@ -36,7 +37,8 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
       // Notify parent to refresh products
       onProductAdded();
       message.success('Product added successfully');
-    } catch (err) {
+    } catch (err: any) {
+      setError(err.message);
       console.error('Failed to add product:', err);
       message.error('Failed to add product. Please try again.');
     } finally {
@@ -57,6 +59,11 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
       footer={null}
       className='!mb-6'
     >
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+          {error}
+        </div>
+      )}
       <Form
         form={form}
         layout="vertical"
@@ -70,9 +77,9 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
               Name
             </span>
           }
-          rules={[{ required: true, message: 'Please input the product name!' }]}
+          rules={[{ required: true, message: 'Please enter the product name!' }]}
         >
-          <Input className="!w-full !text-[15px] !py-2" />
+          <Input className="!w-full !text-[15px] !py-2" placeholder='Please enter product name' />
         </Form.Item>
 
         <Form.Item
@@ -83,7 +90,7 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
             </span>
           }
           rules={[
-            { required: true, message: 'Please input the product price!' },
+            { required: true, message: 'Please enter the product price!' },
             { type: 'number', min: 0.01, message: 'Price must be greater than 0' }
           ]}
         >
@@ -91,13 +98,13 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
             className="!w-full !text-[15px] !py-2"
             min={0.01}
             step={0.01}
-            placeholder="Enter price"
+            placeholder="Please enter price"
             prefix="$"
             onKeyDown={(e) => {
               if (!/[0-9.]/.test(e.key)) {
                 e.preventDefault();
               }
-            }}            
+            }}
           />
         </Form.Item>
 
@@ -109,7 +116,7 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
             </span>
           }
         >
-          <Input.TextArea rows={3} />
+          <Input.TextArea rows={3} placeholder="Please enter description" />
         </Form.Item>
 
         <Form.Item>
