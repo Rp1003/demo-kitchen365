@@ -13,43 +13,63 @@ export class ProductsService {
   ) { }
 
   async findAll(): Promise<Product[]> {
-    return this.productsRepository.find();
+    try {
+      return this.productsRepository.find();
+    } catch (error) {
+      throw new NotFoundException(`${error.message}`);
+    }
+
   }
 
   async search(searchProductDto: SearchProductDto): Promise<Product[]> {
-    const queryBuilder = this.productsRepository.createQueryBuilder('product');
+    try {
+      const queryBuilder = this.productsRepository.createQueryBuilder('product');
 
-    if (searchProductDto.name) {
-      queryBuilder.andWhere('product.name ILIKE :name', { name: `%${searchProductDto.name}%` });
+      if (searchProductDto.name) {
+        queryBuilder.andWhere('product.name ILIKE :name', { name: `%${searchProductDto.name}%` });
+      }
+
+      if (searchProductDto.minPrice !== undefined) {
+        queryBuilder.andWhere('product.price >= :minPrice', { minPrice: searchProductDto.minPrice });
+      }
+
+      if (searchProductDto.maxPrice !== undefined) {
+        queryBuilder.andWhere('product.price <= :maxPrice', { maxPrice: searchProductDto.maxPrice });
+      }
+
+      return queryBuilder.getMany();
+    } catch (error) {
+      throw new NotFoundException(`${error.message}`);
     }
 
-    if (searchProductDto.minPrice !== undefined) {
-      queryBuilder.andWhere('product.price >= :minPrice', { minPrice: searchProductDto.minPrice });
-    }
-
-    if (searchProductDto.maxPrice !== undefined) {
-      queryBuilder.andWhere('product.price <= :maxPrice', { maxPrice: searchProductDto.maxPrice });
-    }
-
-    return queryBuilder.getMany();
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const productExist = await this.productsRepository.findOne({ where: { name: createProductDto.name } });
-console.log(productExist)
-    if(productExist){
-      throw new NotFoundException(`Product already exist in database`);
+    try {
+      const productExist = await this.productsRepository.findOne({ where: { name: createProductDto.name } });
+
+      if (productExist) {
+        throw new NotFoundException(`Product already exist in database`);
+      }
+
+      const product = this.productsRepository.create(createProductDto);
+
+      return this.productsRepository.save(product);
+    } catch (error) {
+      throw new NotFoundException(`${error.message}`);
     }
 
-    const product = this.productsRepository.create(createProductDto);
-    
-    return this.productsRepository.save(product);
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.productsRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Product with ID ${id} not found`);
+    try {
+      const result = await this.productsRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException(`Product with ID ${id} not found`);
+      }
+    } catch (error) {
+      throw new NotFoundException(`${error.message}`);
     }
+
   }
 }

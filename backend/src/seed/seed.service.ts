@@ -26,7 +26,6 @@ export class SeedService {
 
       Logger.log('Default user created: admin');
     } catch (error) {
-      console.log(error.message)
       if (error.message.includes('already exists')) {
         Logger.log('Default user already exists');
       } else {
