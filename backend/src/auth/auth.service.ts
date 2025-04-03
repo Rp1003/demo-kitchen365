@@ -25,10 +25,16 @@ export class AuthService {
   }
 
   async login(user: any) {
+
     try {
       const payload = { username: user.username, sub: user.id };
       const userData = await this.usersService.findOne(user.username);
+      const validateLogin = await this.validateUser(user.username, user.password)
       
+      if (validateLogin === null) {
+        throw new NotFoundException('Invalid credentials. Please check your username and password.');
+      }
+
       if (userData) {
         return {
           access_token: this.jwtService.sign(payload),
