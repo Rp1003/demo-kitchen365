@@ -12,7 +12,7 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findOne(username);
-    if (user && await bcrypt.compare(password, user.password)) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...result } = user;
       return result;
     }
@@ -21,13 +21,15 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { username: user.username, sub: user.id };
+    const userData = await this.usersService.findOne(user.username);
     return {
       access_token: this.jwtService.sign(payload),
+      userData,
     };
   }
 
-  async register(username: string, password: string) {
-    const user = await this.usersService.create(username, password);
+  async register(username: string, password: string, name: string) {
+    const user = await this.usersService.create(username, password, name);
     const { password: _, ...result } = user;
     return result;
   }

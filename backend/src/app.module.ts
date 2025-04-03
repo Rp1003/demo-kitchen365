@@ -24,7 +24,7 @@ import { SeedModule } from './seed/seed.module';
     ProductModule,
     UsersModule,
     AuthModule,
-    SeedModule
+    SeedModule,
   ],
   controllers: [],
   providers: [],

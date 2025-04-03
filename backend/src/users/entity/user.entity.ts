@@ -9,5 +9,8 @@ export class User {
   username: string;
 
   @Column()
+  name: string;
+
+  @Column()
   password: string; // This will store hashed passwords
 }

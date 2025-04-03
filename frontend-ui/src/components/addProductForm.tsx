@@ -2,130 +2,144 @@
 
 import React, { useState } from 'react';
 import { CreateProductDto, createProduct } from '../lib/api';
+import { Modal, Form, Input, InputNumber, Button, message, Select } from 'antd';
+import { useAuth } from '../context/authContext';
+import { useRouter } from 'next/navigation';
 
 interface AddProductFormProps {
   onProductAdded: () => void;
+  onClose: () => void;
+  visible: boolean;
 }
 
-export default function AddProductForm({ onProductAdded }: AddProductFormProps) {
-  const [formData, setFormData] = useState<CreateProductDto>({
-    name: '',
-    price: 0,
-    description: '',
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+export default function AddProductForm({ onProductAdded, onClose, visible }: AddProductFormProps) {
+  const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { token } = useAuth();
+  const router = useRouter();
 
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-    
-    if (formData.price <= 0) {
-      newErrors.price = 'Price must be a positive number';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'price' ? parseFloat(value) || 0 : value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validate()) {
+  const handleSubmit = async (values: CreateProductDto) => {
+    if (!token) {
+      message.warning('Please login to add a product');
+      onClose();
+      router.push('/login?add=true');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      await createProduct(formData);
-      
+      await createProduct(values);
+
       // Reset form
-      setFormData({
-        name: '',
-        price: 0,
-        description: '',
-      });
-      
+      form.resetFields();
+
       // Notify parent to refresh products
       onProductAdded();
+      message.success('Product added successfully');
     } catch (err) {
       console.error('Failed to add product:', err);
-      alert('Failed to add product');
+      message.error('Failed to add product. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleCancel = () => {
+    form.resetFields();
+    onClose();
+  };
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-      
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Name*
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-          />
-          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-        </div>
-        
-        <div className="mb-4">
-          <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-            Price*
-          </label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            step="0.01"
-            min="0.01"
-            className={`w-full px-3 py-2 border rounded-md ${errors.price ? 'border-red-500' : 'border-gray-300'}`}
-          />
-          {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
-        </div>
-        
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-            Description (Optional)
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description || ''}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-        </div>
-        
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:bg-blue-300"
+    <Modal
+      title={<span className="text-[20px] font-bold flex items-center mb-8">Add New Product</span>}
+      open={visible}
+      onCancel={handleCancel}
+      footer={null}
+      className='!mb-6'
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+
+      >
+        <Form.Item
+          name="name"
+          label={
+            <span className="text-[15px] font-medium flex items-center gap-2">
+              Name
+            </span>
+          }
+          rules={[{ required: true, message: 'Please input the product name!' }]}
         >
-          {isSubmitting ? 'Adding...' : 'Add Product'}
-        </button>
-      </form>
-    </div>
+          <Input className="!w-full !text-[15px] !py-2" />
+        </Form.Item>
+
+        <Form.Item
+          name="price"
+          label={
+            <span className="text-[15px] font-medium flex items-center gap-2">
+              Price
+            </span>
+          }
+          rules={[
+            { required: true, message: 'Please input the product price!' },
+            { type: 'number', min: 0.01, message: 'Price must be greater than 0' }
+          ]}
+        >
+          <InputNumber
+            className="!w-full !text-[15px] !py-2"
+            min={0.01}
+            step={0.01}
+            placeholder="Enter price"
+            prefix="$"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="description"
+          label={
+            <span className="text-[15px] font-medium flex items-center gap-2">
+              Description
+            </span>
+          }
+        >
+          <Input.TextArea rows={3} />
+        </Form.Item>
+
+        <Form.Item
+          name="category"
+          label={
+            <span className="text-[15px] font-medium flex items-center gap-2">
+              Category
+            </span>
+          }
+        >
+          <Select
+            className="!w-full !text-[15px]"
+            placeholder="Select a category"
+            options={[
+              { value: 'electronics', label: 'Electronics' },
+              { value: 'clothing', label: 'Clothing' },
+              { value: 'food', label: 'Food' },
+              { value: 'books', label: 'Books' },
+              { value: 'toys', label: 'Toys' },
+            ]}
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <div className="flex justify-end gap-2">
+            <Button onClick={handleCancel} className='!text-[14px]'>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" className='!text-[14px]' loading={isSubmitting}>
+              Add Product
+            </Button>
+          </div>
+        </Form.Item>
+      </Form>
+    </Modal>
+
   );
 }

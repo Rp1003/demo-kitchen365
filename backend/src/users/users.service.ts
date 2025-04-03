@@ -6,30 +6,35 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
-    ) { }
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+  ) {}
 
-    async findOne(username: string): Promise<User | null> {
-        return this.usersRepository.findOne({ where: { username } });
+  async findOne(username: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { username } });
+  }
+
+  async create(
+    username: string,
+    password: string,
+    name: string,
+  ): Promise<User> {
+    // Check if user already exists
+    const existingUser = await this.findOne(username);
+    if (existingUser) {
+      throw new ConflictException('Username already exists');
     }
 
-    async create(username: string, password: string): Promise<User> {
-        // Check if user already exists
-        const existingUser = await this.findOne(username);
-        if (existingUser) {
-            throw new ConflictException('Username already exists');
-        }
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
+    const user = this.usersRepository.create({
+      username,
+      name,
+      password: hashedPassword,
+    });
 
-        const user = this.usersRepository.create({
-            username,
-            password: hashedPassword,
-        });
-
-        return this.usersRepository.save(user);
-    }
+    return this.usersRepository.save(user);
+  }
 }

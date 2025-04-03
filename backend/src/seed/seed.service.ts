@@ -19,7 +19,8 @@ export class SeedService {
       // Create and save a default admin user
       const user = this.usersRepository.create({
         username: 'admin',
-        password: hashedPassword
+        password: hashedPassword,
+        name:"Admin"
       });
       await this.usersRepository.save(user);
 

@@ -5,10 +5,10 @@ import { login as apiLogin, register as apiRegister } from '../lib/api';
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  user: { username: string } | null;
+  user: { username: string, name: string } | null;
   token: string | null;
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (username: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
@@ -16,7 +16,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<{ username: string } | null>(null);
+  const [user, setUser] = useState<{ username: string, name: string } | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -24,34 +24,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
     }
-    
+
     setLoading(false);
   }, []);
 
   const login = async (username: string, password: string) => {
     setLoading(true);
     try {
-      const { access_token } = await apiLogin(username, password);
+      const { access_token, userData }: any = await apiLogin(username, password);
       setToken(access_token);
-      setUser({ username });
-      
+      setUser({ username, name: userData.name });
+
       // Store in localStorage
       localStorage.setItem('token', access_token);
-      localStorage.setItem('user', JSON.stringify({ username }));
+      localStorage.setItem('user', JSON.stringify({ username, name: userData.name }));
     } finally {
       setLoading(false);
     }
   };
 
-  const register = async (username: string, password: string) => {
+  const register = async (name: string, username: string, password: string) => {
     setLoading(true);
     try {
-      await apiRegister(username, password);
+      await apiRegister(name, username, password);
       // After registration, login automatically
       await login(username, password);
     } finally {
