@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:1401";
+const API_URL = "http://localhost:1400";
 
 export interface Product {
   id: string;
