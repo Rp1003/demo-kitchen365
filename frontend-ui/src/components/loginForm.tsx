@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
 import { Input, Button, Card } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -27,6 +27,16 @@ export default function LoginForm() {
       setError(err.message || 'Authentication failed');
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 3000); // 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+  }, [error]);
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">

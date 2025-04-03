@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CreateProductDto, createProduct } from '../lib/api';
 import { Modal, Form, Input, InputNumber, Button, message, Select } from 'antd';
 import { useAuth } from '../context/authContext';
@@ -50,6 +50,16 @@ export default function AddProductForm({ onProductAdded, onClose, visible }: Add
     form.resetFields();
     onClose();
   };
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 3000); // 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+  }, [error]);
 
   return (
     <Modal
