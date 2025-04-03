@@ -17,7 +17,7 @@ import { SeedModule } from './seed/seed.module';
       port: 5432,
       username: 'postgres',
       password: 'postgres',
-      database: 'product_catalog',
+      database: 'demo_kitchen365',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // Set to false in production
     }),

@@ -1,11 +1,11 @@
-# Product Catalog Application
+# Product Application
 
-A full-stack application for managing a product catalog, built with Next.js (Frontend), Nest.js (Backend), and PostgreSQL (Database).
+A full-stack application for managing a products, built with Next.js (Frontend), Nest.js (Backend), and PostgreSQL (Database).
 
 ## Project Structure
 
 ```
-product-catalog/
+demo-kitchen365/
 ├── backend/           # Nest.js backend application
 └── frontend/          # Next.js frontend application
 ```
@@ -22,6 +22,7 @@ product-catalog/
 
 ```bash
 git clone <repository-url>
+cd demo-kitchen365
 ```
 
 ### 2. Start PostgreSQL with Docker
@@ -34,7 +35,7 @@ docker-compose up -d
 This will start PostgreSQL on port 5432 with the following credentials:
 - Username: postgres
 - Password: postgres
-- Database: product_catalog
+- Database: demo_kitchen365
 
 ### 3. Setup and run the Backend
 
@@ -46,6 +47,8 @@ npm run start:dev
 
 The backend will be available at: http://localhost:3000 or if are you using .env then http://localhost:{process.env.PORT}
 
+After that first go to seed api and create user using http://localhost:{process.env.PORT}/seed/createUser
+
 ### 4. Setup and run the Frontend
 
 ```bash
@@ -55,6 +58,10 @@ npm run dev
 ```
 
 The frontend will be available at: http://localhost:3000
+
+Login detail:- 
+admin@admin.com 
+Admin@123
 
 ## API Documentation
 
