@@ -13,11 +13,7 @@ import { SeedModule } from './seed/seed.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'demo_kitchen365',
+      url: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/demo_kitchen365',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // Set to false in production
     }),

@@ -1,18 +1,42 @@
-# Product Application
+# Demo Kitchen365 
 
-A full-stack application for managing a products, built with Next.js (Frontend), Nest.js (Backend), and PostgreSQL (Database).
+A full-stack application for managing restaurant operations, built with Next.js (Frontend), Nest.js (Backend), and PostgreSQL (Database).
 
 ## Project Structure
 
 ```
 demo-kitchen365/
 ├── backend/           # Nest.js backend application
-└── frontend/          # Next.js frontend application
+│   ├── src/          # Source code
+│   ├── test/         # Test files
+│   ├── .env          # Environment variables
+│   └── docker-compose.yml  # Docker configuration
+└── frontend-ui/      # Next.js frontend application
+    ├── src/          # Source code
+    ├── public/       # Static assets
+    └── next.config.ts # Next.js configuration
 ```
+
+## Tech Stack
+
+### Backend
+- Nest.js (Node.js framework)
+- TypeORM (Database ORM)
+- PostgreSQL (Database)
+- JWT Authentication
+- Swagger (API Documentation)
+- Jest (Testing)
+
+### Frontend
+- Next.js 15
+- React 19
+- Ant Design (UI Components)
+- TailwindCSS (Styling)
+- TypeScript
 
 ## Prerequisites
 
-- Node.js (v23.10.0)
+- Node.js (v18 or higher)
 - Docker and Docker Compose
 - npm or yarn
 
@@ -25,111 +49,94 @@ git clone <repository-url>
 cd demo-kitchen365
 ```
 
-### 2. Start PostgreSQL with Docker
+### 2. Backend Setup
 
+1. Navigate to the backend directory:
 ```bash
 cd backend
+```
+
+2. Create a `.env` file based on `.env.example`:
+```bash
+cp .env.example .env
+```
+
+3. Start PostgreSQL with Docker:
+```bash
 docker-compose up -d
 ```
 
-This will start PostgreSQL on port 5432 with the following credentials:
-- Username: postgres
-- Password: postgres
-- Database: demo_kitchen365
-
-### 3. Setup and run the Backend
-
+4. Install dependencies and start the backend:
 ```bash
-cd backend
 npm install
 npm run start:dev
 ```
 
-The backend will be available at: http://localhost:3000 or if are you using .env then http://localhost:{process.env.PORT}
+The backend will be available at: http://localhost:3000 or http://localhost:1400
 
-After that first go to seed api and create user using http://localhost:{process.env.PORT}/seed/createUser
+### 3. Frontend Setup
 
-### 4. Setup and run the Frontend
-
+1. Navigate to the frontend directory:
 ```bash
-cd frontend
-npm install
-npm run dev
+cd frontend-ui
 ```
 
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. In frontend-ui/src/lib/api.ts file, update the API_URL constant to match your backend port:
+
+4. Start the development server:
+```bash
+npm run dev
+
+```
 The frontend will be available at: http://localhost:3000
 
-Login detail:- 
-admin@admin.com 
-Admin@123
+## Features
+
+### Backend Features
+- RESTful API architecture
+- JWT-based authentication
+- Role-based access control
+- Database migrations
+- API documentation with Swagger
+- Unit and e2e testing setup
+
+### Frontend Features
+- Modern UI with Ant Design
+- Responsive design
+- Type-safe development with TypeScript
+- Optimized performance with Next.js
+- TailwindCSS for styling
+
+## Development
+
+### Backend Development
+- Run tests: `npm test`
+- Lint code: `npm run lint`
+- Format code: `npm run format`
+
+### Frontend Development
+- Run development server: `npm run dev`
+- Build for production: `npm run build`
+- Lint code: `npm run lint`
 
 ## API Documentation
 
-### Products Endpoints
+Once the backend is running, you can access the Swagger documentation at:
+http://localhost:3000/api/docs or http://localhost:1400/api/docs
 
-- `GET /products` - Get all products
-- `POST /products` - Create a new product
-- `DELETE /products/:id` - Delete a product by ID
+## Contributing
 
-### Request/Response Examples
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-#### Get all products
+## License
 
-Request:
-```http
-GET /products
-```
-
-Response:
-```json
-[
-  {
-    "id": "e87e5d38-6b9a-4bf5-a1d5-08f1ac1fbdca",
-    "name": "Laptop",
-    "price": 999.99,
-    "description": "High-performance laptop"
-  },
-  {
-    "id": "a8e5b1c3-9d2e-4f7g-8h9i-0j1k2l3m4n5o",
-    "name": "Smartphone",
-    "price": 699.99,
-    "description": "Latest model smartphone"
-  }
-]
-```
-
-#### Create a product
-
-Request:
-```http
-POST /products
-Content-Type: application/json
-
-{
-  "name": "Headphones",
-  "price": 129.99,
-  "description": "Noise-canceling headphones"
-}
-```
-
-Response:
-```json
-{
-  "id": "b7c8d9e0-f1g2-h3i4-j5k6-l7m8n9o0p1q2",
-  "name": "Headphones",
-  "price": 129.99,
-  "description": "Noise-canceling headphones"
-}
-```
-
-#### Delete a product
-
-Request:
-```http
-DELETE /products/b7c8d9e0-f1g2-h3i4-j5k6-l7m8n9o0p1q2
-```
-
-Response:
-```
-204 No Content
-```
+This project is licensed under the UNLICENSED License.
